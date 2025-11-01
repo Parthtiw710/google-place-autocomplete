@@ -34,7 +34,7 @@ Your input box now supports Google Places Autocomplete using the Maps JavaScript
 ---
 
 ## ✅ Notes
-
+- Download autocomplete.jsx file
 - Ensure the API key has **Places API** and **Maps JavaScript API** enabled in Google Cloud Console.  
 - The key must begin with **NEXT_PUBLIC_** to be accessible in a Next.js client component.  
 - Do **not** wrap the key in quotes or add commas.  
