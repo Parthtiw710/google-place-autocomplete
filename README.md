@@ -3,4 +3,6 @@ create a .env file in main project directory and store your api key as file     
 
 import {Autocomplete} from "./autocomplete" ;
 
-wrap your <input> inside     <Autocomplete><input placeholder="type ...."></input></Autocomplete>   like this and enjoy
+wrap your <input> inside  
+<Autocomplete><input placeholder="type ...."></input></Autocomplete>  
+like this and enjoy
