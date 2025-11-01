@@ -1,0 +1,42 @@
+
+
+## Step 1️⃣ — Create a .env file
+
+In the root directory of your project, create a new file named `.env.local`  
+and add your Google Maps API key as follows (⚠️ without quotes or commas):
+
+NEXT_PUBLIC_GOOGLEMAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY
+
+Example:
+NEXT_PUBLIC_GOOGLEMAPS_API_KEY=AIzaSyXXXXXXX-XXXXXXX
+
+---
+
+## Step 2️⃣ — Import the Autocomplete component
+
+In your page or component file, import the component:
+
+import { Autocomplete } from "./autocomplete";
+
+---
+
+## Step 3️⃣ — Wrap your input element
+
+Use the component as shown below:
+
+<Autocomplete>
+  <input type="text" placeholder="Type a location..." />
+</Autocomplete>
+
+That’s it! 🎉  
+Your input box now supports Google Places Autocomplete using the Maps JavaScript API.
+
+---
+
+## ✅ Notes
+
+- Ensure the API key has **Places API** and **Maps JavaScript API** enabled in Google Cloud Console.  
+- The key must begin with **NEXT_PUBLIC_** to be accessible in a Next.js client component.  
+- Do **not** wrap the key in quotes or add commas.  
+- After adding the `.env` file, restart your development server.
+
