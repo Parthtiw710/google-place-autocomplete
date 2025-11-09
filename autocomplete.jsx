@@ -19,7 +19,7 @@ export function Autocomplete({ children }) {
     libraries,
   });
 
-  // Initialize Google services
+  // Load google services
   useEffect(() => {
     if (!isLoaded || !window.google) return;
     setAutocompleteService(new window.google.maps.places.AutocompleteService());
@@ -27,7 +27,7 @@ export function Autocomplete({ children }) {
     setPlacesService(new window.google.maps.places.PlacesService(mapDiv));
   }, [isLoaded]);
 
-  // Clone and inject behavior into input
+  // Clone input to control value + autocomplete dropdown
   const clonedInput = React.Children.map(children, (child) =>
     React.cloneElement(child, {
       ref: inputRef,
@@ -35,51 +35,49 @@ export function Autocomplete({ children }) {
       onChange: (e) => {
         const v = e.target.value;
         setValue(v);
-
         if (v && autocompleteService) {
-          autocompleteService.getPlacePredictions(
-            { input: v },
-            (res, status) => {
-              if (
-                status ===
-                  window.google.maps.places.PlacesServiceStatus.OK &&
-                res
-              ) {
-                setPredictions(res);
-                setShowDropdown(true);
-              } else {
-                setPredictions([]);
-                setShowDropdown(false);
-              }
+          autocompleteService.getPlacePredictions({ input: v }, (res, status) => {
+            if (
+              status === window.google.maps.places.PlacesServiceStatus.OK &&
+              res
+            ) {
+              setPredictions(res);
+              setShowDropdown(true);
+            } else {
+              setPredictions([]);
+              setShowDropdown(false);
             }
-          );
+          });
         } else {
           setPredictions([]);
           setShowDropdown(false);
         }
+        // allow external onChange if passed
+        if (child.props.onChange) child.props.onChange(e);
       },
       onFocus: () => value && setShowDropdown(true),
     })
   );
 
-  // Handle item click
+  // ✅ Handle selecting a prediction (this was missing!)
   const handleSelect = (prediction) => {
     if (!placesService) return;
-    setValue(prediction.description);
+
+    const placeName = prediction.description;
+    setValue(placeName);
     setShowDropdown(false);
 
-    placesService.getDetails(
-      { placeId: prediction.place_id },
-      (place, status) => {
-        if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-          console.log("Selected place:", place);
-        }
-      }
-    );
+    // ✅ Send selected value to parent input (HeroBookRide)
+    if (typeof children.props.onSelect === "function") {
+      children.props.onSelect(placeName);
+    }
+
+    // get full details silently (not required but safe)
+    placesService.getDetails({ placeId: prediction.place_id }, () => {});
   };
 
   return (
-    <div className="relative w-[400px] mx-auto">
+    <div className="relative w-full mx-auto">
       {clonedInput}
 
       {showDropdown && predictions.length > 0 && (
@@ -87,8 +85,8 @@ export function Autocomplete({ children }) {
           {predictions.map((p) => (
             <div
               key={p.place_id}
-              onClick={() => handleSelect(p)}
               onMouseDown={(e) => e.preventDefault()}
+              onClick={() => handleSelect(p)}
               className="flex items-start gap-2.5 px-4 py-2.5 cursor-pointer border-b border-[#f2f2f2] hover:bg-gray-50 transition"
             >
               <div className="bg-[#f3f3f3] rounded-full w-7 h-7 flex items-center justify-center mt-0.5 shrink-0">
@@ -103,10 +101,10 @@ export function Autocomplete({ children }) {
               </div>
 
               <div className="flex-1">
-                <div className="text-[15px] font-medium text-[#111] leading-[1.2]">
+                <div className="md:text-xl sm:text-lg text-md font-medium text-[#111] leading-[1.2]">
                   {p.structured_formatting.main_text}
                 </div>
-                <div className="text-[13px] text-gray-500 mt-0.5 leading-[1.3]">
+                <div className="sm:text-md text-sm text-gray-500 mt-0.5 leading-[1.3]">
                   {p.structured_formatting.secondary_text}
                 </div>
               </div>
